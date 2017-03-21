@@ -26,6 +26,7 @@ public:
 	void load(const char *path);
 	void save(const char *path);
 	void travel(int maxDepth);
+	bool checkExpression(const std::string, bool showProcess=false);
 
 	void showDFA();
 	void addNewState(int newState);
@@ -33,7 +34,7 @@ public:
 
 private:
 	bool _isAccepted(int curState);
-	void _getNextStates(int curState, std::vector<PIS> &nextStates);
+	void _getNextTransitions(int curState, std::vector<PIS> &nextStates);
 	void _travel(std::string str, int curState, int maxDepth);
 
 private:

@@ -113,6 +113,12 @@ void DFA::travel(int maxDepth)
 	_travel("", startState_, maxDepth);
 }
 
+bool DFA::checkExpression(const string str, bool showProcess)
+{
+	int len = str.length();
+	int curState = startState_;
+}
+
 void DFA::showDFA()
 {
 	string stars(40, '*');
@@ -177,7 +183,7 @@ bool DFA::_isAccepted(int curState)
 		return false;
 }
 
-void DFA::_getNextStates(int curState, vector<PIS> &nextStates)
+void DFA::_getNextTransitions(int curState, vector<PIS> &nextStates)
 {
 	int curStateIndex = node2index_[curState];
 	int size = dfa_[curStateIndex].second.size();
@@ -198,7 +204,7 @@ void DFA::_travel(string str, int curState, int maxDepth)
 		return;
 
 	vector<PIS> nextStates;
-	_getNextStates(curState, nextStates);
+	_getNextTransitions(curState, nextStates);
 
 	for(vector<PIS>::iterator iter = nextStates.begin(); 
 		iter != nextStates.end(); iter++)
