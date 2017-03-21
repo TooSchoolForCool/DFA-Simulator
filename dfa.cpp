@@ -117,6 +117,13 @@ bool DFA::checkExpression(const string str, bool showProcess)
 {
 	int len = str.length();
 	int curState = startState_;
+
+	for(int i = 0; i < len; i++)
+	{
+		curState = _getNextState(curState, str[i]);
+	}
+
+	return _isAccepted(curState);
 }
 
 void DFA::showDFA()
@@ -191,6 +198,33 @@ void DFA::_getNextTransitions(int curState, vector<PIS> &nextStates)
 
 	for(int i = 0; i < size; i++)
 		nextStates.push_back(linkList[i]);
+}
+
+int DFA::_getNextState(int curState, char alphabet)
+{
+	int curStateIndex = node2index_[curState];
+	vector<PIS> linkList = dfa_[curStateIndex].second;
+
+	for(vector<PIS>::iterator iter = linkList.begin();
+		iter != linkList.end(); iter++)
+	{
+		if(iter->second[0] == alphabet)
+		{
+			return iter->first;
+		}
+	}
+
+	// check for special alphabet `other`, any alphabet other than `\n`
+	for(vector<PIS>::iterator iter = linkList.begin();
+		iter != linkList.end(); iter++)
+	{
+		if(iter->second == "other")
+		{
+			return iter->first;
+		}
+	}
+
+	return -1;
 }
 
 void DFA::_travel(string str, int curState, int maxDepth)

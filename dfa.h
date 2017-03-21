@@ -35,6 +35,7 @@ public:
 private:
 	bool _isAccepted(int curState);
 	void _getNextTransitions(int curState, std::vector<PIS> &nextStates);
+	int _getNextState(int curState, char alphabet);
 	void _travel(std::string str, int curState, int maxDepth);
 
 private:
