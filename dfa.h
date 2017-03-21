@@ -23,12 +23,16 @@ public:
 
 public:
 	// load DFA 载入DFA
-	void load(char *path);
-	void save(char *path);
+	void load(const char *path);
+	void save(const char *path);
+	void travel(std::string str, int curState, int maxDepth);
 
 	void showDFA();
 	void addNewState(int newState);
 	void addTransition(int a, int b, char ch);
+
+private:
+	bool isAccepted(int curState);
 
 private:
 	std::string alphabets_;
@@ -38,7 +42,7 @@ private:
 	int numOfTransitions;
 	
 	int startState_;
-	std::vector<int> acceptedStates_;
+	std::map<int, bool> acceptedStates_;
 
 	// std::map<int, int> index2node_;
 };

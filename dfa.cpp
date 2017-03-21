@@ -12,7 +12,7 @@ DFA::~DFA()
 	// ...
 }
 
-void DFA::load(char *path)
+void DFA::load(const char *path)
 {
 	ifstream in(path);
 	int n, tmp, a, b;
@@ -45,7 +45,7 @@ void DFA::load(char *path)
 	for(int i = 0; i < n; i++)
 	{
 		in >> tmp;
-		acceptedStates_.push_back(tmp);
+		acceptedStates_[tmp] = true;
 	}
 
 	// read in number transitions
@@ -60,7 +60,7 @@ void DFA::load(char *path)
 	in.close();
 }
 
-void DFA::save(char *path)
+void DFA::save(const char *path)
 {
 	ofstream out(path);
 
@@ -84,9 +84,10 @@ void DFA::save(char *path)
 	out << acceptedStates_.size() << endl;
 
 	// write in accepted state number
-	for(int i = 0; i < acceptedStates_.size(); i++)
+	for(map<int, bool>::iterator iter = acceptedStates_.begin(); 
+		iter != acceptedStates_.end(); iter++)
 	{
-		out << acceptedStates_[i] << " ";
+		out << iter->first << " ";
 	}
 	out << endl;
 
@@ -107,24 +108,41 @@ void DFA::save(char *path)
 	out.close();
 }
 
+void DFA::travel(string str, int curState, int maxDepth)
+{
+	// if(str.length() == maxDepth)
+	// {
+
+	// }
+}
+
 void DFA::showDFA()
 {
-	cout << "Alphabests: " << alphabets_ << endl;
+	string stars(40, '*');
 
-	cout << "Start State: " << startState_ << endl;
+	cout << stars << endl;
+	cout << "\tBrief DFA Description" << endl;
+	cout << stars << endl;
 
-	cout << "Accepted States: ";
-	for(int i = 0; i < acceptedStates_.size(); i++)
-		cout << acceptedStates_[i] << " ";
+	cout << "* Alphabests: " << alphabets_ << endl;
+
+	cout << "* Start State: " << startState_ << endl;
+
+	cout << "* Accepted States: ";
+	for(map<int, bool>::iterator iter = acceptedStates_.begin(); 
+		iter != acceptedStates_.end(); iter++)
+	{
+		cout << iter->first << " ";
+	}
 	cout << endl;
 
-	cout << "Transitions Map:" << endl;
+	cout << "* Transitions Map:" << endl;
 	for(int i = 0; i < dfa_.size(); i++)
 	{	
 		int curState = dfa_[i].first;
 		const vector<PIC> &vec = dfa_[i].second;
 
-		printf("State %d: ", curState);
+		printf("\tState %d: ", curState);
 		for(int j = 0; j < vec.size(); j++)
 		{
 			printf("(%d->%d %c) ", curState, vec[j].first, vec[j].second);
@@ -151,4 +169,9 @@ void DFA::addTransition(int a, int b, char ch)
 	vec.push_back( PIC(b, ch) );
 
 	numOfTransitions++;
+}
+
+bool DFA::isAccepted(int curState)
+{
+	
 }
