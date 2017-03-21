@@ -41,7 +41,8 @@ void DFA::load(const string path)
 	}
 
 	// read in start state
-	in >> startState_;
+	in >> tmp;
+	setStartState(tmp);
 
 	// read in number of accepted state
 	in >> n;
@@ -60,6 +61,8 @@ void DFA::load(const string path)
 		in >> a >> b >> str;
 		addTransition(a, b, str);
 	}
+
+	checkDFATransitions();
 
 	in.close();
 }
@@ -192,6 +195,13 @@ void DFA::addNewState(int newState)
 {
 	vector<PIS> linkList;
 
+	// Check Duplicate
+	if(node2index_.find(newState) != node2index_.end())
+	{
+		cerr << "Duplicate State: " << newState << endl;
+		exit(1);
+	}
+
 	node2index_[newState] = dfa_.size();
 
 	dfa_.push_back( PIPIS(newState, linkList) );
@@ -203,6 +213,21 @@ void DFA::addNewState(int newState)
  */
 void DFA::addTransition(int a, int b, string str)
 {
+	// Check if state a, b exists
+	if(node2index_.find(a) == node2index_.end() 
+		|| node2index_.find(b) == node2index_.end())
+	{
+		cerr << "Cannot find state: " << a << ", " << b << endl;
+		exit(1);
+	}
+
+	// Check if alphabet str exist
+	if(alphabets_.find(str) ==  string::npos)
+	{
+		cout << "Do not have such alphabet: " << str << endl;
+		exit(1);
+	}
+
 	int indexA = node2index_[a];
 
 	vector<PIS> &vec = dfa_[indexA].second;
@@ -218,6 +243,11 @@ void DFA::addTransition(int a, int b, string str)
  */
 void DFA::setStartState(int startState)
 {
+	if(node2index_.find(startState) == node2index_.end())
+	{
+		cerr << "Cannot find the start state: " << startState << " in the whole states" << endl;
+		exit(1);
+	}
 	startState_ = startState;
 }
 
@@ -227,6 +257,12 @@ void DFA::setStartState(int startState)
  */
 void DFA::setAcceptedStates(const std::vector<int> vec)
 {
+	if(vec.size() == 0)
+	{
+		cerr << "Empty accepted state" << endl;
+		exit(1);
+	}
+
 	for(int i = 0; i < vec.size(); i++)
 	{
 		acceptedStates_[vec[i]] = true;
@@ -240,6 +276,42 @@ void DFA::setAcceptedStates(const std::vector<int> vec)
 void DFA::setAlphabets(std::string alphabets)
 {
 	alphabets_ = alphabets;
+}
+
+/**
+ * Check current DFA transition table if is correct
+ * 检查当前DFA状态转移是否合法
+ */
+bool DFA::checkDFATransitions()
+{	
+	int i, j, k;
+	if(acceptedStates_.size() == 0)
+	{
+		cerr << "Empty accepted state" << endl;
+		exit(1);
+	}
+
+	// Check transition table if is complete
+	for(i = 0; i < dfa_.size(); i++)
+	{
+		int curState = dfa_[i].first;
+		vector<PIS> linkList = dfa_[i].second;
+
+		for(j = 0; j < alphabets_.length(); j++)
+		{
+			for(k = 0; k < linkList.size(); k++)
+			{
+				if(linkList[k].second[0] == alphabets_[j])
+					break;
+			}
+
+			if(k == linkList.size())
+			{
+				cerr << "State " << curState << " do NOT have transition of " << alphabets_[j] << endl;
+				exit(0);
+			}
+		}
+	}
 }
 
 /**
@@ -286,11 +358,11 @@ int DFA::_getNextState(int curState, char alphabet)
 		}
 	}
 
-	// check for special alphabet `other`, any alphabet other than `\n`
+	// check for special alphabet `~`, which means any alphabet other than `\n`
 	for(vector<PIS>::iterator iter = linkList.begin();
 		iter != linkList.end(); iter++)
 	{
-		if(iter->second == "other")
+		if(iter->second == "~")
 		{
 			return iter->first;
 		}

@@ -49,7 +49,6 @@ public:
 	 * 输出当前DFA内容
 	 */
 	void showDFA();
-
 	/**
 	 * Add a new state node
 	 * 添加新的状态
@@ -75,6 +74,11 @@ public:
 	 * 设置字符集
 	 */
 	void setAlphabets(std::string alphabets);
+	/**
+	 * Check current DFA transition table if is correct
+	 * 检查当前DFA状态转移是否合法
+	 */
+	bool checkDFATransitions();
 
 private:
 	/**
