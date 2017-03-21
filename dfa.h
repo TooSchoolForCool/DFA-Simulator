@@ -35,7 +35,7 @@ private:
 
 	std::vector<PIPIC> dfa_;
 	std::map<int, int> node2index_;
-	int numOfStates_;
+	int numOfTransitions;
 	
 	int startState_;
 	std::vector<int> acceptedStates_;

@@ -4,7 +4,7 @@ using namespace std;
 
 DFA::DFA()
 {
-	numOfStates_ = 0;
+	numOfTransitions = 0;
 }
 
 DFA::~DFA()
@@ -24,43 +24,37 @@ void DFA::load(char *path)
 		return;
 	}
 
-	// 字符集
+	// read alphabets
 	in >> alphabets_;
-	// cout << alphabets_ << endl;
 
-	// 状态节点
+	// read in number of states
 	in >> n;
-	// cout << n << endl;
+	// read in each state
 	for(int i = 0; i < n; i++)
 	{
 		in >> tmp;
 		addNewState(tmp);
-		// cout << tmp << " ";
 	}
-	// cout << endl;
 
-	// start state
+	// read in start state
 	in >> startState_;
-	// cout << startState_ << endl;
 
-	// accepted nodes
+	// read in number of accepted state
 	in >> n;
-	// cout << n << endl;
+	// read in each accepted state
 	for(int i = 0; i < n; i++)
 	{
 		in >> tmp;
 		acceptedStates_.push_back(tmp);
-		// cout << tmp << " ";
 	}
-	// cout << endl;
 
+	// read in number transitions
 	in >> n;
-	// cout << n << endl;
+	// read in each transition
 	for(int i = 0; i < n; i++)
 	{
 		in >> a >> b >> ch;
 		addTransition(a, b, ch);
-		// cout << a << " " << b << " " << ch << endl;
 	}
 
 	in.close();
@@ -68,7 +62,49 @@ void DFA::load(char *path)
 
 void DFA::save(char *path)
 {
-	// ...
+	ofstream out(path);
+
+	// write in alphabets
+	out << alphabets_ << endl;
+	
+	// write in number of states
+	out << dfa_.size() << endl;
+
+	// write in state number
+	for(int i = 0; i < dfa_.size(); i++)
+	{
+		out << dfa_[i].first << " ";
+	}
+	out << endl;
+
+	// write in start state
+	out << startState_ << endl;
+
+	// write in number of accepted states
+	out << acceptedStates_.size() << endl;
+
+	// write in accepted state number
+	for(int i = 0; i < acceptedStates_.size(); i++)
+	{
+		out << acceptedStates_[i] << " ";
+	}
+	out << endl;
+
+	// write in number of transitions
+	out << numOfTransitions << endl;
+	// write in each transition
+	for(int i = 0; i < dfa_.size(); i++)
+	{	
+		int curState = dfa_[i].first;
+		const vector<PIC> &vec = dfa_[i].second;
+
+		for(int j = 0; j < vec.size(); j++)
+		{
+			out << curState << " " << vec[j].first << " " << vec[j].second << endl;
+		}
+	}
+
+	out.close();
 }
 
 void DFA::showDFA()
@@ -101,9 +137,9 @@ void DFA::addNewState(int newState)
 {
 	vector<PIC> linkList;
 
-	dfa_.push_back( PIPIC(newState, linkList) );
+	node2index_[newState] = dfa_.size();
 
-	node2index_[newState] = numOfStates_++;
+	dfa_.push_back( PIPIC(newState, linkList) );
 }
 
 void DFA::addTransition(int a, int b, char ch)
@@ -113,4 +149,6 @@ void DFA::addTransition(int a, int b, char ch)
 	vector<PIC> &vec = dfa_[indexA].second;
 
 	vec.push_back( PIC(b, ch) );
+
+	numOfTransitions++;
 }
