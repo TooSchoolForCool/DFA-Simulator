@@ -4,7 +4,7 @@ using namespace std;
 
 DFA::DFA()
 {
-	numOfTransitions = 0;
+	numOfTransitions_ = 0;
 }
 
 DFA::~DFA()
@@ -16,7 +16,7 @@ void DFA::load(const char *path)
 {
 	ifstream in(path);
 	int n, tmp, a, b;
-	char ch;
+	string str;
 
 	if( !in.is_open() )
 	{
@@ -53,8 +53,8 @@ void DFA::load(const char *path)
 	// read in each transition
 	for(int i = 0; i < n; i++)
 	{
-		in >> a >> b >> ch;
-		addTransition(a, b, ch);
+		in >> a >> b >> str;
+		addTransition(a, b, str);
 	}
 
 	in.close();
@@ -92,12 +92,12 @@ void DFA::save(const char *path)
 	out << endl;
 
 	// write in number of transitions
-	out << numOfTransitions << endl;
+	out << numOfTransitions_ << endl;
 	// write in each transition
 	for(int i = 0; i < dfa_.size(); i++)
 	{	
 		int curState = dfa_[i].first;
-		const vector<PIC> &vec = dfa_[i].second;
+		const vector<PIS> &vec = dfa_[i].second;
 
 		for(int j = 0; j < vec.size(); j++)
 		{
@@ -108,12 +108,9 @@ void DFA::save(const char *path)
 	out.close();
 }
 
-void DFA::travel(string str, int curState, int maxDepth)
+void DFA::travel(int maxDepth)
 {
-	// if(str.length() == maxDepth)
-	// {
-
-	// }
+	_travel("", startState_, maxDepth);
 }
 
 void DFA::showDFA()
@@ -140,12 +137,13 @@ void DFA::showDFA()
 	for(int i = 0; i < dfa_.size(); i++)
 	{	
 		int curState = dfa_[i].first;
-		const vector<PIC> &vec = dfa_[i].second;
+		const vector<PIS> &vec = dfa_[i].second;
 
 		printf("\tState %d: ", curState);
 		for(int j = 0; j < vec.size(); j++)
 		{
-			printf("(%d->%d %c) ", curState, vec[j].first, vec[j].second);
+			printf("(%d->%d ", curState, vec[j].first);
+			cout << vec[j].second << ") ";
 		}
 		cout << endl;
 	}
@@ -153,25 +151,59 @@ void DFA::showDFA()
 
 void DFA::addNewState(int newState)
 {
-	vector<PIC> linkList;
+	vector<PIS> linkList;
 
 	node2index_[newState] = dfa_.size();
 
-	dfa_.push_back( PIPIC(newState, linkList) );
+	dfa_.push_back( PIPIS(newState, linkList) );
 }
 
-void DFA::addTransition(int a, int b, char ch)
+void DFA::addTransition(int a, int b, string str)
 {
 	int indexA = node2index_[a];
 
-	vector<PIC> &vec = dfa_[indexA].second;
+	vector<PIS> &vec = dfa_[indexA].second;
 
-	vec.push_back( PIC(b, ch) );
+	vec.push_back( PIS(b, str) );
 
-	numOfTransitions++;
+	numOfTransitions_++;
 }
 
-bool DFA::isAccepted(int curState)
+bool DFA::_isAccepted(int curState)
 {
-	
+	if(acceptedStates_.find(curState) != acceptedStates_.end())
+		return true;
+	else
+		return false;
+}
+
+void DFA::_getNextStates(int curState, vector<PIS> &nextStates)
+{
+	int curStateIndex = node2index_[curState];
+	int size = dfa_[curStateIndex].second.size();
+	const vector<PIS> &linkList = dfa_[curStateIndex].second;
+
+	for(int i = 0; i < size; i++)
+		nextStates.push_back(linkList[i]);
+}
+
+void DFA::_travel(string str, int curState, int maxDepth)
+{
+	if(str.length() <= maxDepth && _isAccepted(curState))
+	{
+		cout << str << endl;
+	}
+
+	if(str.length() == maxDepth)
+		return;
+
+	vector<PIS> nextStates;
+	_getNextStates(curState, nextStates);
+
+	for(vector<PIS>::iterator iter = nextStates.begin(); 
+		iter != nextStates.end(); iter++)
+	{
+		string tmp = iter->second;
+		_travel(str + iter->second, iter->first, maxDepth);
+	}
 }

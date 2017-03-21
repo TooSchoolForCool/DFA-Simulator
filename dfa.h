@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define PIC 	std::pair<int, char>
-#define PIPIC	std::pair<int, std::vector<PIC> >
+#define PIS 	std::pair<int, std::string>
+#define PIPIS	std::pair<int, std::vector<PIS> >
 
 class DFA
 {
@@ -25,26 +25,26 @@ public:
 	// load DFA 载入DFA
 	void load(const char *path);
 	void save(const char *path);
-	void travel(std::string str, int curState, int maxDepth);
+	void travel(int maxDepth);
 
 	void showDFA();
 	void addNewState(int newState);
-	void addTransition(int a, int b, char ch);
+	void addTransition(int a, int b, std::string str);
 
 private:
-	bool isAccepted(int curState);
+	bool _isAccepted(int curState);
+	void _getNextStates(int curState, std::vector<PIS> &nextStates);
+	void _travel(std::string str, int curState, int maxDepth);
 
 private:
 	std::string alphabets_;
 
-	std::vector<PIPIC> dfa_;
+	std::vector<PIPIS> dfa_;
 	std::map<int, int> node2index_;
-	int numOfTransitions;
+	int numOfTransitions_;
 	
 	int startState_;
 	std::map<int, bool> acceptedStates_;
-
-	// std::map<int, int> index2node_;
 };
 
 #endif 	// _DFA_H
