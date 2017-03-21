@@ -12,6 +12,10 @@ DFA::~DFA()
 	// ...
 }
 
+/**
+ * load DFA configuration file (.dfa file)
+ * 载入DFA配置文件(.dfa文件)
+ */
 void DFA::load(const string path)
 {
 	ifstream in(path);
@@ -60,6 +64,10 @@ void DFA::load(const string path)
 	in.close();
 }
 
+/**
+ * save current dfa settings into a file
+ * 将当前DFA配置保存到文件中
+ */
 void DFA::save(const string path)
 {
 	ofstream out(path);
@@ -108,11 +116,21 @@ void DFA::save(const string path)
 	out.close();
 }
 
+/**
+ * travel through the DFA and find out all possible expressions which 
+ * length is less than or equal to maxDepth
+ * 遍历整个DFA，找出所有长度至多为maxDepth的合法表达式
+ */
 void DFA::travel(int maxDepth)
 {
 	_travel("", startState_, maxDepth);
 }
 
+/**
+ * check if string str will be accepted by the DFA.
+ * if showProcess is true, then print out the check process.
+ * 判断表达式是否会被接受，如果showpProcess为真，则输出中间过程
+ */
 bool DFA::checkExpression(const string str, bool showProcess)
 {
 	int len = str.length();
@@ -126,6 +144,10 @@ bool DFA::checkExpression(const string str, bool showProcess)
 	return _isAccepted(curState);
 }
 
+/**
+ * Show a prief description of current DFA
+ * 输出当前DFA内容
+ */
 void DFA::showDFA()
 {
 	string stars(40, '*');
@@ -162,7 +184,11 @@ void DFA::showDFA()
 	}
 }
 
-void DFA::addNewState(int newState)
+/**
+ * Add a new state node
+ * 添加新的状态
+ */
+void DFA::_addNewState(int newState)
 {
 	vector<PIS> linkList;
 
@@ -171,7 +197,11 @@ void DFA::addNewState(int newState)
 	dfa_.push_back( PIPIS(newState, linkList) );
 }
 
-void DFA::addTransition(int a, int b, string str)
+/**
+ * Add a new transition
+ * 添加新的状态转移
+ */
+void DFA::_addTransition(int a, int b, string str)
 {
 	int indexA = node2index_[a];
 
@@ -182,6 +212,10 @@ void DFA::addTransition(int a, int b, string str)
 	numOfTransitions_++;
 }
 
+/**
+ * Check if curState is a final state
+ * 判断当前状态是否被接受
+ */
 bool DFA::_isAccepted(int curState)
 {
 	if(acceptedStates_.find(curState) != acceptedStates_.end())
@@ -190,6 +224,10 @@ bool DFA::_isAccepted(int curState)
 		return false;
 }
 
+/**
+ * Find all possible transitions of current state
+ * 找到当前节点所有可能的状态转移
+ */
 void DFA::_getNextTransitions(int curState, vector<PIS> &nextStates)
 {
 	int curStateIndex = node2index_[curState];
@@ -200,6 +238,10 @@ void DFA::_getNextTransitions(int curState, vector<PIS> &nextStates)
 		nextStates.push_back(linkList[i]);
 }
 
+/**
+ * Get the next state when current state read in `alphabet`
+ * 找出当前节点读入alphabet后的下一节点
+ */
 int DFA::_getNextState(int curState, char alphabet)
 {
 	int curStateIndex = node2index_[curState];
@@ -227,6 +269,10 @@ int DFA::_getNextState(int curState, char alphabet)
 	return -1;
 }
 
+/**
+ * Real travel funtion, call by the wrapper function travel(int maxDepth)
+ * 真正的遍历DFA函数，被travel函数调用
+ */
 void DFA::_travel(string str, int curState, int maxDepth)
 {
 	if(str.length() <= maxDepth && _isAccepted(curState))
