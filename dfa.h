@@ -23,8 +23,8 @@ public:
 
 public:
 	// load DFA 载入DFA
-	void load(const char *path);
-	void save(const char *path);
+	void load(const std::string path);
+	void save(const std::string path);
 	void travel(int maxDepth);
 	bool checkExpression(const std::string, bool showProcess=false);
 

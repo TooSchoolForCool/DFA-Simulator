@@ -12,7 +12,7 @@ DFA::~DFA()
 	// ...
 }
 
-void DFA::load(const char *path)
+void DFA::load(const string path)
 {
 	ifstream in(path);
 	int n, tmp, a, b;
@@ -60,7 +60,7 @@ void DFA::load(const char *path)
 	in.close();
 }
 
-void DFA::save(const char *path)
+void DFA::save(const string path)
 {
 	ofstream out(path);
 
