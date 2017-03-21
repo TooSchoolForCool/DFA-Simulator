@@ -50,17 +50,33 @@ public:
 	 */
 	void showDFA();
 
-private:
 	/**
 	 * Add a new state node
 	 * 添加新的状态
 	 */
-	void _addNewState(int newState);
+	void addNewState(int newState);
 	/**
 	 * Add a new transition
 	 * 添加新的状态转移
 	 */
-	void _addTransition(int a, int b, std::string str);
+	void addTransition(int a, int b, std::string str);
+	/**
+	 * Initialize all state
+	 * 初始所有状态
+	 */
+	void setStartState(int startState);
+	/**
+	 * Set final state
+	 * 设置接受状态
+	 */
+	void setAcceptedStates(const std::vector<int> vec);
+	/**
+	 * Set Alphabets set
+	 * 设置字符集
+	 */
+	void setAlphabets(std::string alphabets);
+
+private:
 	/**
 	 * Check if curState is a final state
 	 * 判断当前状态是否被接受

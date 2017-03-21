@@ -188,7 +188,7 @@ void DFA::showDFA()
  * Add a new state node
  * 添加新的状态
  */
-void DFA::_addNewState(int newState)
+void DFA::addNewState(int newState)
 {
 	vector<PIS> linkList;
 
@@ -201,7 +201,7 @@ void DFA::_addNewState(int newState)
  * Add a new transition
  * 添加新的状态转移
  */
-void DFA::_addTransition(int a, int b, string str)
+void DFA::addTransition(int a, int b, string str)
 {
 	int indexA = node2index_[a];
 
@@ -210,6 +210,36 @@ void DFA::_addTransition(int a, int b, string str)
 	vec.push_back( PIS(b, str) );
 
 	numOfTransitions_++;
+}
+
+/**
+ * Set Start State
+ * 设置初始状态
+ */
+void DFA::setStartState(int startState)
+{
+	startState_ = startState;
+}
+
+/**
+ * Set final state
+ * 设置接受状态
+ */
+void DFA::setAcceptedStates(const std::vector<int> vec)
+{
+	for(int i = 0; i < vec.size(); i++)
+	{
+		acceptedStates_[vec[i]] = true;
+	}
+}
+
+/**
+ * Set Alphabets set
+ * 设置字符集
+ */
+void DFA::setAlphabets(std::string alphabets)
+{
+	alphabets_ = alphabets;
 }
 
 /**
