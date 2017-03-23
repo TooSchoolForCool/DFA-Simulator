@@ -379,7 +379,7 @@ void DFA::_travel(string str, int curState, int maxDepth)
 {
 	if(str.length() <= maxDepth && _isAccepted(curState))
 	{
-		cout << str << endl;
+		cout << "Accepted Expression: " << str << endl;
 	}
 
 	if(str.length() == maxDepth)
