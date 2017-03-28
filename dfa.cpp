@@ -50,6 +50,11 @@ void DFA::load(const string path)
 	for(int i = 0; i < n; i++)
 	{
 		in >> tmp;
+		if(node2index_.find(tmp) == node2index_.end())
+		{
+			cerr << "Add accpeted state: do NOT have state " << tmp << endl;
+			exit(1);
+		}
 		acceptedStates_[tmp] = true;
 	}
 
@@ -198,7 +203,7 @@ void DFA::addNewState(int newState)
 	// Check Duplicate
 	if(node2index_.find(newState) != node2index_.end())
 	{
-		cerr << "Duplicate State: " << newState << endl;
+		cerr << "Add New State: Duplicate State " << newState << endl;
 		exit(1);
 	}
 
@@ -214,23 +219,38 @@ void DFA::addNewState(int newState)
 void DFA::addTransition(int a, int b, string str)
 {
 	// Check if state a, b exists
-	if(node2index_.find(a) == node2index_.end() 
-		|| node2index_.find(b) == node2index_.end())
+	if(node2index_.find(a) == node2index_.end() )
 	{
-		cerr << "Cannot find state: " << a << ", " << b << endl;
+		cerr << "Add transition: Cannot find state " << a << endl;
+		exit(1);
+	}
+	if(node2index_.find(b) == node2index_.end())
+	{
+		cerr << "Add transition: Cannot find state " << b << endl;
 		exit(1);
 	}
 
 	// Check if alphabet str exist
 	if(alphabets_.find(str) ==  string::npos)
 	{
-		cout << "Do not have such alphabet: " << str << endl;
+		cout << "Add transition: Do not have such alphabet " << str << endl;
 		exit(1);
 	}
 
 	int indexA = node2index_[a];
 
 	vector<PIS> &vec = dfa_[indexA].second;
+
+	// check duplicate transition
+	for(int i = 0; i < vec.size(); i++)
+	{
+		PIS tmp = vec[i];
+		if(tmp.first == b && tmp.second == str)
+		{
+			cerr << "Add transition: Duplicate transition (" << a << " " << b << " " << str << ")" << endl;
+			exit(1);
+		}
+	}
 
 	vec.push_back( PIS(b, str) );
 
@@ -245,7 +265,7 @@ void DFA::setStartState(int startState)
 {
 	if(node2index_.find(startState) == node2index_.end())
 	{
-		cerr << "Cannot find the start state: " << startState << " in the whole states" << endl;
+		cerr << "setStartState: Cannot find the start state " << startState << " in the whole states" << endl;
 		exit(1);
 	}
 	startState_ = startState;
@@ -259,12 +279,17 @@ void DFA::setAcceptedStates(const std::vector<int> vec)
 {
 	if(vec.size() == 0)
 	{
-		cerr << "Empty accepted state" << endl;
+		cerr << "setAcceptedStates: Empty accepted state" << endl;
 		exit(1);
 	}
 
 	for(int i = 0; i < vec.size(); i++)
 	{
+		if(node2index_.find(vec[i]) == node2index_.end())
+		{
+			cerr << "Add accpeted state: do NOT have state " << vec[i] << endl;
+			exit(1);
+		}
 		acceptedStates_[vec[i]] = true;
 	}
 }
@@ -348,6 +373,13 @@ int DFA::_getNextState(int curState, char alphabet)
 {
 	int curStateIndex = node2index_[curState];
 	vector<PIS> linkList = dfa_[curStateIndex].second;
+
+	// Check if alphabet str exist
+	// if(alphabets_.find(alphabet) ==  string::npos)
+	// {
+	// 	cout << "get NextState: Do not have such alphabet " << str << endl;
+	// 	exit(1);
+	// }
 
 	for(vector<PIS>::iterator iter = linkList.begin();
 		iter != linkList.end(); iter++)
